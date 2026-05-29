@@ -1,0 +1,23 @@
+import {
+  IsEmail,
+  IsString,
+  MinLength,
+  IsOptional,
+  IsIn,
+} from 'class-validator';
+
+export class RegisterDto {
+  @IsString()
+  tenantName: string;
+
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  @MinLength(8)
+  password: string;
+
+  @IsOptional()
+  @IsIn(['STARTER', 'GROWTH', 'ENTERPRISE'])
+  plan?: string;
+}

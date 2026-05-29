@@ -1,0 +1,170 @@
+version: '3.9'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# HR AI Multi-tenant SaaS — Local Development Stack
+# ─────────────────────────────────────────────────────────────────────────────
+# Usage:
+#   docker compose up -d           → Start all infra services
+#   docker compose down -v         → Stop and remove volumes (clean slate)
+#   docker compose logs -f redis   → Tail specific service logs
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  # ───────────────────────────────────────────────────────────────────────────
+  # PostgreSQL 16 + pgvector
+  # All 8 service databases are created via init.sql on first boot
+  # ───────────────────────────────────────────────────────────────────────────
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: hr-ai-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Redis 7 — BullMQ queues + AI service caching
+  # Key prefix convention: tenant:{tenantId}:{purpose}
+  # ───────────────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: hr-ai-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # MinIO — Local S3-compatible object storage
+  # document-service and audit-service use this in development
+  # Console: http://localhost:9001 (admin/minioadmin)
+  # ───────────────────────────────────────────────────────────────────────────
+  minio:
+    image: minio/minio:latest
+    container_name: hr-ai-minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # MinIO Console
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # MinIO bucket initializer — creates required buckets on first start
+  # ───────────────────────────────────────────────────────────────────────────
+  minio-init:
+    image: minio/mc:latest
+    container_name: hr-ai-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+        mc alias set local http://minio:9000 minioadmin minioadmin;
+        mc mb --ignore-existing local/hr-ai-documents;
+        mc mb --ignore-existing local/hr-ai-audit-exports;
+        mc anonymous set download local/hr-ai-documents;
+        echo 'Buckets initialized';
+      "
+    restart: "no"
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Mailpit — Local email catcher (SMTP + Web UI)
+  # communication-service sends to this in development
+  # Web UI: http://localhost:8025
+  # SMTP: localhost:1025
+  # ───────────────────────────────────────────────────────────────────────────
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: hr-ai-mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
+    environment:
+      MP_MAX_MESSAGES: 500
+      MP_DATABASE: /data/mailpit.db
+    volumes:
+      - mailpit_data:/data
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Redis Commander — Redis Web UI for queue inspection
+  # UI: http://localhost:8081
+  # ───────────────────────────────────────────────────────────────────────────
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: hr-ai-redis-ui
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # ClamAV — Antivirus scanner (optional — comment out if memory-constrained)
+  # document-service scans uploads against this daemon
+  # ───────────────────────────────────────────────────────────────────────────
+  # clamav:
+  #   image: clamav/clamav:stable
+  #   container_name: hr-ai-clamav
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3310:3310"
+  #   volumes:
+  #     - clamav_data:/var/lib/clamav
+  #   healthcheck:
+  #     test: ["CMD", "clamdscan", "--ping"]
+  #     interval: 60s
+  #     timeout: 30s
+  #     retries: 3
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Named volumes
+# ─────────────────────────────────────────────────────────────────────────────
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  minio_data:
+    driver: local
+  mailpit_data:
+    driver: local
+  # clamav_data:
+  #   driver: local
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Network
+# ─────────────────────────────────────────────────────────────────────────────
+networks:
+  default:
+    name: hr-ai-network

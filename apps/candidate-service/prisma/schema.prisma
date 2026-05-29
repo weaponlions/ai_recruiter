@@ -1,0 +1,62 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgvector(map: "vector")]
+}
+
+model Candidate {
+  id            String    @id @default(uuid())
+  tenantId      String
+  email         String
+  emailHash     String
+  firstName     String
+  lastName      String
+  phone         String?
+  linkedinUrl   String?
+  resumeUrl     String?
+  tags          String[]
+  consentStatus String    @default("PENDING")
+  /// pgvector 1536-dimensional embedding for semantic search
+  embedding     Unsupported("vector(1536)")?
+  source        String    @default("MANUAL")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  notes       CandidateNote[]
+  consentLogs ConsentLog[]
+
+  @@unique([tenantId, emailHash])
+  @@index([tenantId])
+  @@index([tenantId, consentStatus])
+}
+
+model CandidateNote {
+  id          String    @id @default(uuid())
+  candidateId String
+  tenantId    String
+  content     String
+  authorId    String
+  createdAt   DateTime  @default(now())
+
+  candidate Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@index([candidateId])
+}
+
+model ConsentLog {
+  id          String    @id @default(uuid())
+  candidateId String
+  tenantId    String
+  action      String
+  ipAddress   String?
+  createdAt   DateTime  @default(now())
+
+  candidate Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@index([candidateId])
+}

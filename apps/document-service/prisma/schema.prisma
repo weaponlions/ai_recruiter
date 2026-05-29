@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model File {
+  id           String    @id @default(uuid())
+  tenantId     String
+  candidateId  String?
+  storageKey   String    @unique
+  originalName String
+  mimeType     String
+  sizeBytes    Int
+  scanStatus   String    @default("PENDING")
+  uploadedBy   String
+  expiresAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  scanResult ScanResult?
+
+  @@index([tenantId])
+  @@index([tenantId, candidateId])
+}
+
+model ScanResult {
+  id          String   @id @default(uuid())
+  fileId      String   @unique
+  scanEngine  String   @default("clamav")
+  verdict     String
+  details     String?
+  scannedAt   DateTime @default(now())
+
+  file File @relation(fields: [fileId], references: [id], onDelete: Cascade)
+}

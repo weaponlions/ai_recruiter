@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ParseJob {
+  id          String    @id @default(uuid())
+  tenantId    String
+  fileId      String
+  status      String    @default("QUEUED")
+  modelUsed   String?
+  tokensUsed  Int       @default(0)
+  inputTokens Int       @default(0)
+  outputTokens Int      @default(0)
+  result      Json?
+  error       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([tenantId])
+  @@index([fileId])
+}
+
+model MatchJob {
+  id          String   @id @default(uuid())
+  tenantId    String
+  jobId       String
+  candidateId String
+  score       Float
+  confidence  Float
+  modelUsed   String
+  tokensUsed  Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([jobId])
+}
+
+model CostLedger {
+  id           String   @id @default(uuid())
+  tenantId     String
+  model        String
+  inputTokens  Int
+  outputTokens Int
+  costUsd      Float
+  operation    String
+  createdAt    DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([tenantId, createdAt])
+}
+
+model ResumeCache {
+  id        String   @id @default(uuid())
+  fileHash  String   @unique
+  result    Json
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}

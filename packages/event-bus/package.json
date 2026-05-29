@@ -1,0 +1,30 @@
+{
+  "name": "@hr-ai/event-bus",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src/**/*.ts",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@hr-ai/shared-types": "workspace:*",
+    "bullmq": "^5.7.8",
+    "ioredis": "^5.4.1"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^10.3.0",
+    "@nestjs/core": "^10.3.0",
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "@nestjs/common": "^10.3.0",
+    "@nestjs/core": "^10.3.0",
+    "reflect-metadata": "^0.2.2",
+    "rimraf": "^5.0.7",
+    "typescript": "^5.4.5"
+  }
+}

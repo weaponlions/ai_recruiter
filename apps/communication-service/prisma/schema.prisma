@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model EmailTemplate {
+  id        String   @id @default(uuid())
+  tenantId  String
+  name      String
+  subject   String
+  htmlBody  String
+  textBody  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+}
+
+model EmailLog {
+  id             String    @id @default(uuid())
+  tenantId       String
+  recipientEmail String
+  templateId     String?
+  subject        String
+  status         String    @default("QUEUED")
+  trackingId     String    @unique @default(uuid())
+  sentAt         DateTime?
+  bouncedAt      DateTime?
+  createdAt      DateTime  @default(now())
+
+  trackingEvents TrackingEvent[]
+
+  @@index([tenantId])
+}
+
+model TrackingEvent {
+  id         String   @id @default(uuid())
+  emailLogId String
+  type       String
+  userAgent  String?
+  ipAddress  String?
+  occurredAt DateTime @default(now())
+
+  emailLog   EmailLog @relation(fields: [emailLogId], references: [id])
+
+  @@index([emailLogId])
+}
+
+model CalendarEvent {
+  id           String   @id @default(uuid())
+  tenantId     String
+  candidateId  String
+  interviewerId String
+  jobId        String?
+  title        String
+  startAt      DateTime
+  endAt        DateTime
+  provider     String   @default("manual")
+  externalId   String?
+  meetingUrl   String?
+  createdAt    DateTime @default(now())
+
+  @@index([tenantId])
+}

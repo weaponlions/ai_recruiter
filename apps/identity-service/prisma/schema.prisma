@@ -1,0 +1,73 @@
+// This is your Prisma schema file for identity-service.
+// Learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Tenant ──────────────────────────────────────────────────────────────────
+// Root entity for multi-tenancy. Each organisation is a Tenant.
+model Tenant {
+  id        String   @id @default(uuid())
+  name      String
+  plan      String   @default("STARTER") // STARTER | GROWTH | ENTERPRISE
+  seatQuota Int      @default(5)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users   User[]
+  invites Invite[]
+}
+
+// ─── User ─────────────────────────────────────────────────────────────────────
+model User {
+  id           String    @id @default(uuid())
+  tenantId     String
+  email        String
+  passwordHash String
+  mfaSecret    String?   // TOTP secret (null = MFA not enabled)
+  role         String    @default("RECRUITER") // ADMIN | HR_MANAGER | RECRUITER | INTERVIEWER | VIEWER
+  isActive     Boolean   @default(true)
+  invitedAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  refreshTokens RefreshToken[]
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+}
+
+// ─── RefreshToken ─────────────────────────────────────────────────────────────
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique // bcrypt hash of the raw refresh token
+  expiresAt DateTime
+  revokedAt DateTime? // null = active
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Invite ───────────────────────────────────────────────────────────────────
+model Invite {
+  id         String    @id @default(uuid())
+  tenantId   String
+  email      String
+  role       String
+  token      String    @unique // signed invite token
+  expiresAt  DateTime
+  acceptedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}

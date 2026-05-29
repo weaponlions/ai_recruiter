@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AuditLog {
+  id             String   @id @default(uuid())
+  tenantId       String
+  eventType      String
+  source         String
+  actorId        String?
+  resourceId     String?
+  resourceType   String?
+  data           Json     @default("{}")
+  hash           String
+  previousHash   String   @default("GENESIS")
+  sequenceNumber Int
+  createdAt      DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([tenantId, eventType])
+  @@index([tenantId, createdAt])
+}
+
+model ComplianceRequest {
+  id             String    @id @default(uuid())
+  tenantId       String
+  requestType    String
+  candidateEmail String
+  status         String    @default("PENDING")
+  requestedBy    String
+  processedAt    DateTime?
+  exportUrl      String?
+  createdAt      DateTime  @default(now())
+
+  @@index([tenantId])
+}

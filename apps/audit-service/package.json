@@ -1,0 +1,57 @@
+{
+  "name": "@hr-ai/audit-service",
+  "version": "0.0.1",
+  "description": "Audit microservice: immutable logs, DPDP/GDPR compliance, retention scheduler",
+  "private": true,
+  "scripts": {
+    "build": "nest build",
+    "dev": "nest start --watch",
+    "start": "node dist/main.js",
+    "lint": "eslint \"{src,apps,libs}/**/*.ts\"",
+    "type-check": "tsc --noEmit",
+    "test": "jest",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate deploy"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.600.0",
+    "@hr-ai/config": "workspace:*",
+    "@hr-ai/event-bus": "workspace:*",
+    "@hr-ai/logger": "workspace:*",
+    "@hr-ai/shared-types": "workspace:*",
+    "@hr-ai/tenant-guard": "workspace:*",
+    "@nestjs/bullmq": "^10.2.1",
+    "@nestjs/common": "^10.3.0",
+    "@nestjs/core": "^10.3.0",
+    "@nestjs/platform-fastify": "^10.3.0",
+    "@nestjs/schedule": "^4.1.0",
+    "@prisma/client": "^5.13.0",
+    "bullmq": "^5.7.8",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "ioredis": "^5.3.2",
+    "nestjs-pino": "^4.1.0",
+    "pino": "^9.2.0",
+    "pino-http": "^10.2.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.3.2",
+    "@nestjs/schematics": "^10.1.1",
+    "@nestjs/testing": "^10.3.0",
+    "@types/node": "^20.14.0",
+    "prisma": "^5.13.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "jest": {
+    "moduleFileExtensions": ["js", "json", "ts"],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": { "^.+\\.(t|j)s$": "ts-jest" },
+    "collectCoverageFrom": ["**/*.(t|j)s"],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  }
+}

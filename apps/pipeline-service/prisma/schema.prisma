@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Pipeline {
+  id        String   @id @default(uuid())
+  tenantId  String
+  jobId     String
+  name      String
+  createdAt DateTime @default(now())
+
+  stages Stage[]
+
+  @@index([tenantId])
+  @@index([jobId])
+}
+
+model Stage {
+  id         String   @id @default(uuid())
+  pipelineId String
+  tenantId   String
+  name       String
+  order      Int
+  color      String   @default("#6366f1")
+  createdAt  DateTime @default(now())
+
+  pipeline         Pipeline         @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+  candidateStages  CandidateStage[]
+  scorecards       Scorecard[]
+
+  @@index([pipelineId])
+}
+
+model CandidateStage {
+  id          String   @id @default(uuid())
+  candidateId String
+  stageId     String
+  pipelineId  String
+  tenantId    String
+  movedAt     DateTime @default(now())
+  movedBy     String
+  notes       String?
+
+  stage Stage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([candidateId])
+  @@index([stageId])
+}
+
+model Scorecard {
+  id            String   @id @default(uuid())
+  candidateId   String
+  stageId       String
+  tenantId      String
+  scores        Json
+  overallScore  Float?
+  recommendation String?
+  submittedBy   String
+  submittedAt   DateTime @default(now())
+
+  stage Stage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+
+  @@index([candidateId])
+}
+
+model ActivityLog {
+  id          String   @id @default(uuid())
+  tenantId    String
+  candidateId String
+  type        String
+  description String
+  actorId     String
+  metadata    Json     @default("{}")
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId, candidateId])
+}
