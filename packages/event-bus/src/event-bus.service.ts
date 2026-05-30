@@ -72,7 +72,7 @@ export class EventBusService implements OnModuleDestroy {
         );
         await handler(job.data);
       },
-      { connection: this.connection.duplicate(), concurrency },
+      { connection: this.connection.duplicate() as any, concurrency },
     );
 
     worker.on('failed', (job, err) => {
@@ -92,7 +92,7 @@ export class EventBusService implements OnModuleDestroy {
 
   private getOrCreateQueue(queueName: string): Queue {
     if (!this.queues.has(queueName)) {
-      const q = new Queue(queueName, { connection: this.connection.duplicate() });
+      const q = new Queue(queueName, { connection: this.connection.duplicate() as any });
       this.queues.set(queueName, q);
     }
     return this.queues.get(queueName)!;
