@@ -4,9 +4,9 @@ import { ComplianceService, ComplianceRequestType } from './compliance.service';
 import { IsEmail, IsEnum, IsString } from 'class-validator';
 
 class CreateComplianceRequestDto {
-  @IsEnum(['DATA_EXPORT', 'RIGHT_TO_ERASURE']) requestType: ComplianceRequestType;
-  @IsEmail() candidateEmail: string;
-  @IsString() reason: string;
+  @IsEnum(['DATA_EXPORT', 'RIGHT_TO_ERASURE']) requestType!: ComplianceRequestType;
+  @IsEmail() candidateEmail!: string;
+  @IsString() reason!: string;
 }
 
 @Controller('compliance')
