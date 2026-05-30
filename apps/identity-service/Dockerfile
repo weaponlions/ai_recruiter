@@ -2,15 +2,15 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-RUN npm install -g pnpm
+RUN npm install -g yarn --prefer-offline
 
-COPY pnpm-workspace.yaml turbo.json package.json pnpm-lock.yaml* ./
+COPY turbo.json package.json yarn.lock* ./
 COPY packages/ ./packages/
 COPY apps/identity-service/ ./apps/identity-service/
 
-RUN pnpm install --frozen-lockfile
-RUN pnpm --filter @hr-ai/identity-service run prisma:generate
-RUN pnpm --filter @hr-ai/identity-service run build
+RUN yarn install --frozen-lockfile --network-concurrency 2
+RUN yarn workspace @hr-ai/prisma:generate
+RUN yarn workspace @hr-ai/identity-service build
 
 # ---- Production Stage ----
 FROM node:20-alpine AS production

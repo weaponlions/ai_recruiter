@@ -2,10 +2,10 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-RUN npm install -g pnpm
+RUN npm install -g yarn --prefer-offline
 
 # Copy workspace manifests
-COPY pnpm-workspace.yaml turbo.json package.json pnpm-lock.yaml* ./
+COPY turbo.json package.json yarn.lock* ./
 
 # Copy shared packages
 COPY packages/ ./packages/
@@ -14,10 +14,10 @@ COPY packages/ ./packages/
 COPY apps/api-gateway/ ./apps/api-gateway/
 
 # Install all dependencies
-RUN pnpm install --frozen-lockfile
+RUN yarn install --frozen-lockfile --network-concurrency 2
 
 # Build the service
-RUN pnpm --filter @hr-ai/api-gateway run build
+RUN yarn workspace @hr-ai/api-gateway build
 
 # ---- Production Stage ----
 FROM node:20-alpine AS production

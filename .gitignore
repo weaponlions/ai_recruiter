@@ -3,6 +3,13 @@ node_modules/
 .pnp
 .pnp.js
 
+# Yarn
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+
 # Build outputs
 dist/
 build/
@@ -21,7 +28,8 @@ prisma/migrations/dev.db
 logs/
 *.log
 npm-debug.log*
-pnpm-debug.log*
+yarn-error.log*
+
 
 # Coverage
 coverage/

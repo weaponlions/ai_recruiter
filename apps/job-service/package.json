@@ -14,11 +14,11 @@
     "db:migrate": "prisma migrate dev"
   },
   "dependencies": {
-    "@hr-ai/config": "workspace:*",
-    "@hr-ai/event-bus": "workspace:*",
-    "@hr-ai/logger": "workspace:*",
-    "@hr-ai/shared-types": "workspace:*",
-    "@hr-ai/tenant-guard": "workspace:*",
+    "@hr-ai/config": "*",
+    "@hr-ai/event-bus": "*",
+    "@hr-ai/logger": "*",
+    "@hr-ai/shared-types": "*",
+    "@hr-ai/tenant-guard": "*",
     "@nestjs/common": "^10.3.0",
     "@nestjs/core": "^10.3.0",
     "@nestjs/platform-fastify": "^10.3.0",

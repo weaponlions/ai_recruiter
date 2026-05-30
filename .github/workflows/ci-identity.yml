@@ -15,7 +15,6 @@ on:
 
 env:
   NODE_VERSION: '20'
-  PNPM_VERSION: '9'
 
 jobs:
   lint-typecheck:
@@ -23,16 +22,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm turbo run lint --filter=@hr-ai/identity-service...
-      - run: pnpm turbo run type-check --filter=@hr-ai/identity-service...
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile --network-concurrency 2
+      - run: yarn turbo run lint --filter=@hr-ai/identity-service...
+      - run: yarn turbo run type-check --filter=@hr-ai/identity-service...
 
   test:
     name: Unit Tests
@@ -55,17 +51,14 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/identity_db_test
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile --network-concurrency 2
       - name: Generate Prisma client
-        run: pnpm --filter=@hr-ai/identity-service exec prisma generate
-      - run: pnpm turbo run test --filter=@hr-ai/identity-service
+        run: yarn workspace @hr-ai/identity-service exec prisma generate
+      - run: yarn turbo run test --filter=@hr-ai/identity-service
 
   docker-build:
     name: Docker Build Validation

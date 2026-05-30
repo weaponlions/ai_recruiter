@@ -11,7 +11,7 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "@hr-ai/shared-types": "workspace:*",
+    "@hr-ai/shared-types": "*",
     "bullmq": "^5.7.8",
     "ioredis": "^5.4.1"
   },

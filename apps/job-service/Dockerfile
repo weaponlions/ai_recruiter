@@ -1,11 +1,11 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
-RUN npm install -g pnpm
-COPY pnpm-workspace.yaml turbo.json package.json ./
+RUN npm install -g yarn --prefer-offline
+COPY turbo.json package.json ./
 COPY packages/ ./packages/
 COPY apps/job-service/ ./apps/job-service/
-RUN pnpm install --frozen-lockfile
-RUN pnpm --filter @hr-ai/job-service run build
+RUN yarn install --frozen-lockfile --network-concurrency 2
+RUN yarn workspace @hr-ai/job-service build
 
 FROM node:20-alpine AS production
 RUN addgroup -g 1001 -S nodejs && adduser -S nestjs -u 1001

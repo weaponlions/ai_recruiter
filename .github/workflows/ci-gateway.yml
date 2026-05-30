@@ -15,7 +15,6 @@ on:
 
 env:
   NODE_VERSION: '20'
-  PNPM_VERSION: '9'
 
 jobs:
   lint-typecheck:
@@ -24,23 +23,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'yarn'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: yarn install --frozen-lockfile --network-concurrency 2
 
       - name: Lint
-        run: pnpm turbo run lint --filter=@hr-ai/api-gateway...
+        run: yarn turbo run lint --filter=@hr-ai/api-gateway...
 
       - name: Type-check
-        run: pnpm turbo run type-check --filter=@hr-ai/api-gateway...
+        run: yarn turbo run type-check --filter=@hr-ai/api-gateway...
 
   test:
     name: Unit Tests
@@ -48,20 +44,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'yarn'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: yarn install --frozen-lockfile --network-concurrency 2
 
       - name: Run tests
-        run: pnpm turbo run test --filter=@hr-ai/api-gateway
+        run: yarn turbo run test --filter=@hr-ai/api-gateway
 
   docker-build:
     name: Docker Build Validation
