@@ -30,6 +30,9 @@ logs/
 npm-debug.log*
 yarn-error.log*
 
+# Allow audit-service src/logs directory
+!apps/audit-service/src/logs/
+
 
 # Coverage
 coverage/
