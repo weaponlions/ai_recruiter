@@ -35,9 +35,8 @@ export class TrackingService {
       emailLog.tenantId,
       {
         emailLogId: emailLog.id,
-        recipientEmail: emailLog.recipientEmail,
-        ipAddress: ipAddress ?? undefined,
-        userAgent: userAgent ?? undefined,
+        tenantId: emailLog.tenantId,
+        occurredAt: new Date().toISOString(),
       },
     );
 

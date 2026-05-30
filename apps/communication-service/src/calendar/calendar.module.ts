@@ -3,7 +3,7 @@ import { CalendarController } from './calendar.controller';
 import { CalendarService } from './calendar.service';
 import { CalendarRepository } from './calendar.repository';
 import { CommunicationPublisher } from '../events/communication.publisher';
-import { PrismaModule } from '../prisma/prisma.module';
+import { PrismaService } from '../prisma/prisma.service';
 
-@Module({ imports: [PrismaModule], controllers: [CalendarController], providers: [CalendarService, CalendarRepository, CommunicationPublisher] })
+@Module({ controllers: [CalendarController], providers: [CalendarService, CalendarRepository, PrismaService, CommunicationPublisher] })
 export class CalendarModule {}

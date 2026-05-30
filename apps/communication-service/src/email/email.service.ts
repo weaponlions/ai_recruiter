@@ -72,12 +72,12 @@ export class EmailService {
         data: { status: 'SENT', sentAt: new Date() },
       });
 
-      await this.publisher.emailSent(tenantId, { emailLogId: emailLog.id, recipientEmail: options.recipientEmail });
-      this.logger.log(`Email sent: logId=${emailLog.id} to=${options.recipientEmail}`);
+      await this.publisher.emailSent(tenantId, { tenantId, emailLogId: emailLog.id, recipientEmail: options.recipientEmail });
+      this.logger.log("Email sent: logId=" + emailLog.id + " to=" + options.recipientEmail);
 
       return { ...emailLog, status: 'SENT', sentAt: new Date() };
     } catch (resendErr) {
-      this.logger.warn(`Resend failed, falling back to SMTP: ${(resendErr as Error).message}`);
+      this.logger.warn("Resend failed, falling back to SMTP: " + (resendErr as Error).message);
 
       try {
         await this.dispatchViaSmtp(options.recipientEmail, subject, trackedHtml, textBody);
@@ -87,8 +87,8 @@ export class EmailService {
           data: { status: 'SENT', sentAt: new Date() },
         });
 
-        await this.publisher.emailSent(tenantId, { emailLogId: emailLog.id, recipientEmail: options.recipientEmail });
-        this.logger.log(`Email sent via SMTP fallback: logId=${emailLog.id}`);
+        await this.publisher.emailSent(tenantId, { tenantId, emailLogId: emailLog.id, recipientEmail: options.recipientEmail });
+        this.logger.log("Email sent via SMTP fallback: logId=" + emailLog.id);
 
         return { ...emailLog, status: 'SENT', sentAt: new Date() };
       } catch (smtpErr) {
