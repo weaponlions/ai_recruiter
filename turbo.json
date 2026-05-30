@@ -36,6 +36,10 @@
     "db:migrate": {
       "cache": false,
       "dependsOn": ["db:generate"]
+    },
+    "db:push": {
+      "cache": false,
+      "dependsOn": ["db:generate"]
     }
   }
 }

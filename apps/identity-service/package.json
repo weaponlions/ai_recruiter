@@ -17,6 +17,7 @@
                     "test:cov":  "jest --coverage",
                     "db:generate":  "prisma generate",
                     "db:migrate":  "prisma migrate deploy",
+                    "db:push":  "prisma db push --accept-data-loss",
                     "type-check":  "tsc --noEmit",
                     "dev":  "ts-node -r tsconfig-paths/register src/main.ts"
                 },
