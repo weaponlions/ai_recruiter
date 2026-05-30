@@ -72,7 +72,7 @@ export class EmailService {
         data: { status: 'SENT', sentAt: new Date() },
       });
 
-      await this.publisher.publishEmailSent(tenantId, emailLog.id, options.recipientEmail);
+      await this.publisher.emailSent(tenantId, { emailLogId: emailLog.id, recipientEmail: options.recipientEmail });
       this.logger.log(`Email sent: logId=${emailLog.id} to=${options.recipientEmail}`);
 
       return { ...emailLog, status: 'SENT', sentAt: new Date() };
@@ -87,7 +87,7 @@ export class EmailService {
           data: { status: 'SENT', sentAt: new Date() },
         });
 
-        await this.publisher.publishEmailSent(tenantId, emailLog.id, options.recipientEmail);
+        await this.publisher.emailSent(tenantId, { emailLogId: emailLog.id, recipientEmail: options.recipientEmail });
         this.logger.log(`Email sent via SMTP fallback: logId=${emailLog.id}`);
 
         return { ...emailLog, status: 'SENT', sentAt: new Date() };

@@ -4,12 +4,12 @@ import { CalendarService } from './calendar.service';
 import { IsString, IsUUID, IsOptional, IsDateString } from 'class-validator';
 
 class CreateCalendarEventDto {
-  @IsUUID() candidateId: string;
-  @IsUUID() interviewerId: string;
+  @IsUUID() candidateId!: string;
+  @IsUUID() interviewerId!: string;
   @IsUUID() @IsOptional() jobId?: string;
-  @IsString() title: string;
-  @IsDateString() startAt: string;
-  @IsDateString() endAt: string;
+  @IsString() title!: string;
+  @IsDateString() startAt!: string;
+  @IsDateString() endAt!: string;
   @IsString() @IsOptional() meetingUrl?: string;
 }
 

@@ -31,10 +31,14 @@ export class TrackingService {
       },
     });
 
-    await this.publisher.publishEmailOpened(
+    await this.publisher.emailOpened(
       emailLog.tenantId,
-      emailLog.id,
-      emailLog.recipientEmail,
+      {
+        emailLogId: emailLog.id,
+        recipientEmail: emailLog.recipientEmail,
+        ipAddress: ipAddress ?? undefined,
+        userAgent: userAgent ?? undefined,
+      },
     );
 
     this.logger.log(`Email open recorded: emailLogId=${emailLog.id} trackingId=${trackingId}`);
