@@ -2,10 +2,10 @@ import { IsString, IsOptional, IsObject } from 'class-validator';
 
 export class ProxyRequestDto {
   @IsString()
-  method: string;
+  method!: string;
 
   @IsString()
-  path: string;
+  path!: string;
 
   @IsOptional()
   @IsObject()
