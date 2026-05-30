@@ -4,10 +4,10 @@ export enum JobType { FULL_TIME = 'FULL_TIME', PART_TIME = 'PART_TIME', CONTRACT
 
 export class CreateJobDto {
   @IsString() @MinLength(3)
-  title: string;
+  title!: string;
 
   @IsString() @MinLength(10)
-  description: string;
+  description!: string;
 
   @IsString() @IsOptional()
   requirements?: string;
