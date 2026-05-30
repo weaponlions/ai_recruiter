@@ -1,5 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { EventBusService } from '@hr-ai/event-bus';
+import { CloudEvent, FileScannedPayload, ParsingCompletedPayload } from '@hr-ai/shared-types';
 import { CandidatesRepository } from '../candidates/candidates.repository';
 
 @Injectable()
@@ -21,15 +22,10 @@ export class CandidateConsumer implements OnModuleInit {
    * When a file scan completes with CLEAN verdict, updates the candidate resumeUrl.
    */
   private subscribeToFileScanned(): void {
-    this.eventBus.subscribe(
+    this.eventBus.subscribe<FileScannedPayload>(
       'file.scanned',
-      async (payload: {
-        candidateId?: string;
-        tenantId?: string;
-        storageKey?: string;
-        verdict?: string;
-        fileUrl?: string;
-      }) => {
+      async (event: CloudEvent<FileScannedPayload>) => {
+        const payload = event.data;
         if (!payload.candidateId || !payload.tenantId || payload.verdict !== 'CLEAN') {
           return;
         }
@@ -53,17 +49,10 @@ export class CandidateConsumer implements OnModuleInit {
    * When resume parsing is done, updates candidate fields with extracted data.
    */
   private subscribeToParsingCompleted(): void {
-    this.eventBus.subscribe(
+    this.eventBus.subscribe<ParsingCompletedPayload>(
       'parsing.completed',
-      async (payload: {
-        candidateId?: string;
-        tenantId?: string;
-        firstName?: string;
-        lastName?: string;
-        phone?: string;
-        tags?: string[];
-        linkedinUrl?: string;
-      }) => {
+      async (event: CloudEvent<ParsingCompletedPayload>) => {
+        const payload = event.data;
         if (!payload.candidateId || !payload.tenantId) return;
         try {
           const updateData: Record<string, unknown> = {};

@@ -10,7 +10,7 @@ export class CandidatePublisher {
 
   async publishCandidateCreated(candidate: Candidate): Promise<void> {
     try {
-      await this.eventBus.publish('candidate.created', {
+      await this.eventBus.publish('candidate.created', candidate.tenantId, {
         candidateId: candidate.id,
         tenantId: candidate.tenantId,
         email: candidate.email,
@@ -27,7 +27,7 @@ export class CandidatePublisher {
 
   async publishCandidateUpdated(candidate: Candidate): Promise<void> {
     try {
-      await this.eventBus.publish('candidate.updated', {
+      await this.eventBus.publish('candidate.updated', candidate.tenantId, {
         candidateId: candidate.id,
         tenantId: candidate.tenantId,
         updatedAt: candidate.updatedAt.toISOString(),
@@ -40,7 +40,7 @@ export class CandidatePublisher {
 
   async publishConsentRevoked(candidateId: string, tenantId: string): Promise<void> {
     try {
-      await this.eventBus.publish('consent.revoked', {
+      await this.eventBus.publish('consent.revoked', tenantId, {
         candidateId,
         tenantId,
         revokedAt: new Date().toISOString(),
