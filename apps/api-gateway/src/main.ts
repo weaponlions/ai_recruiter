@@ -50,6 +50,8 @@ async function bootstrap() {
       'Content-Type',
       'Authorization',
       'X-Tenant-ID',
+      'X-User-ID',
+      'X-User-Role',
       'X-Request-ID',
     ],
   });
