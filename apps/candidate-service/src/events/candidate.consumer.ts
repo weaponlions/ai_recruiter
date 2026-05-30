@@ -22,9 +22,9 @@ export class CandidateConsumer implements OnModuleInit {
    * When a file scan completes with CLEAN verdict, updates the candidate resumeUrl.
    */
   private subscribeToFileScanned(): void {
-    this.eventBus.subscribe<FileScannedPayload>(
+    this.eventBus.subscribe<any>(
       'file.scanned',
-      async (event: CloudEvent<FileScannedPayload>) => {
+      async (event: CloudEvent<any>) => {
         const payload = event.data;
         if (!payload.candidateId || !payload.tenantId || payload.verdict !== 'CLEAN') {
           return;
@@ -49,9 +49,9 @@ export class CandidateConsumer implements OnModuleInit {
    * When resume parsing is done, updates candidate fields with extracted data.
    */
   private subscribeToParsingCompleted(): void {
-    this.eventBus.subscribe<ParsingCompletedPayload>(
+    this.eventBus.subscribe<any>(
       'parsing.completed',
-      async (event: CloudEvent<ParsingCompletedPayload>) => {
+      async (event: CloudEvent<any>) => {
         const payload = event.data;
         if (!payload.candidateId || !payload.tenantId) return;
         try {

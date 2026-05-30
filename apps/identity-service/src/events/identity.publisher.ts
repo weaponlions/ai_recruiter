@@ -84,7 +84,8 @@ export class IdentityPublisher {
 
   private async safePublish(event: string, payload: Record<string, unknown>) {
     try {
-      await this.eventBus.publish(event, payload);
+      const tenantId = (payload['tenantId'] as string) || 'SYSTEM';
+      await this.eventBus.publish(event, tenantId, payload);
       this.logger.log(`Published event: ${event}`);
     } catch (err: any) {
       // Non-critical — log and continue to avoid blocking the HTTP response

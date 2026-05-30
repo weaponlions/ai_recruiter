@@ -43,7 +43,7 @@ export class UsersRepository {
   ) {
     return this.prisma.user.update({
       where: { id },
-      data: { ...data, tenantId }, // tenantId cannot be changed
+      data: { ...data, tenantId } as any, // tenantId cannot be changed
     });
   }
 

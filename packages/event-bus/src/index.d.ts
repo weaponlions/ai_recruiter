@@ -1,0 +1,4 @@
+export * from './event-bus.module';
+export * from './event-bus.service';
+export * from './event-bus.options';
+//# sourceMappingURL=index.d.ts.map

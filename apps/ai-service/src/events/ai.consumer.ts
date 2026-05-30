@@ -26,7 +26,8 @@ export class AiConsumer implements OnModuleInit {
   private subscribeToFileScanned(): void {
     this.eventBus.subscribe<FileScannedPayload>(
       'file.scanned',
-      async (payload) => {
+      async (event) => {
+        const payload = event.data;
         this.logger.log(
           `Received file.scanned event: fileId=${payload.fileId} verdict=${payload.verdict}`,
         );

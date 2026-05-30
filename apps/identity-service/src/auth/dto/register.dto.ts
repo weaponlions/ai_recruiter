@@ -8,14 +8,14 @@ import {
 
 export class RegisterDto {
   @IsString()
-  tenantName: string;
+  tenantName!: string;
 
   @IsEmail()
-  email: string;
+  email!: string;
 
   @IsString()
   @MinLength(8)
-  password: string;
+  password!: string;
 
   @IsOptional()
   @IsIn(['STARTER', 'GROWTH', 'ENTERPRISE'])

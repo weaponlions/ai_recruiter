@@ -2,8 +2,7 @@ import { Module } from '@nestjs/common';
 import { PipelinesController } from './pipelines.controller';
 import { PipelinesService } from './pipelines.service';
 import { PipelinesRepository } from './pipelines.repository';
-import { PipelinePublisher } from '../events/pipeline.publisher';
-import { PipelineConsumer } from '../events/pipeline.consumer';
+import { PipelinePublisher, PipelineConsumer } from '../events/pipeline.publisher';
 
 @Module({
   controllers: [PipelinesController],

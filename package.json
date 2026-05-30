@@ -3,10 +3,18 @@
   "version": "0.0.1",
   "private": true,
   "description": "HR AI Multi-tenant SaaS — Phase 1 Monorepo",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/prisma",
+      "**/prisma/**",
+      "**/@prisma/client",
+      "**/@prisma/client/**"
+    ]
+  },
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
@@ -26,6 +34,9 @@
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.12",
+    "ts-jest": "^29.1.4",
     "prettier": "^3.3.2",
     "rimraf": "^5.0.7",
     "turbo": "^2.0.9",

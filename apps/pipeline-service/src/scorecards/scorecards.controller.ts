@@ -4,9 +4,9 @@ import { ScorecardsService } from './scorecards.service';
 import { IsUUID, IsObject, IsOptional, IsNumber, IsString } from 'class-validator';
 
 class CreateScorecardDto {
-  @IsUUID() candidateId: string;
-  @IsUUID() stageId: string;
-  @IsObject() scores: object;
+  @IsUUID() candidateId!: string;
+  @IsUUID() stageId!: string;
+  @IsObject() scores!: object;
   @IsNumber() @IsOptional() overallScore?: number;
   @IsString() @IsOptional() recommendation?: string;
 }

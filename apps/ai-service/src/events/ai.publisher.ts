@@ -12,7 +12,7 @@ export class AiPublisher {
     parseJobId: string,
     fileId: string,
   ): Promise<void> {
-    await this.eventBus.publish('parsing.started', {
+    await this.eventBus.publish('parsing.started', tenantId, {
       tenantId,
       parseJobId,
       fileId,
@@ -27,7 +27,7 @@ export class AiPublisher {
     fileId: string,
     result: object,
   ): Promise<void> {
-    await this.eventBus.publish('parsing.completed', {
+    await this.eventBus.publish('parsing.completed', tenantId, {
       tenantId,
       parseJobId,
       fileId,
@@ -44,7 +44,7 @@ export class AiPublisher {
     candidateId: string,
     score: number,
   ): Promise<void> {
-    await this.eventBus.publish('match.generated', {
+    await this.eventBus.publish('match.generated', tenantId, {
       tenantId,
       matchJobId,
       jobId,

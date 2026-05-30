@@ -7,6 +7,24 @@ export class PipelinePublisher {
   constructor(private readonly bus: EventBusService) {}
   async candidateMoved(tenantId: string, payload: CandidateMovedPayload) { return this.bus.publish(EventType.CANDIDATE_MOVED, tenantId, payload); }
   async interviewScheduled(tenantId: string, payload: InterviewScheduledPayload) { return this.bus.publish(EventType.INTERVIEW_SCHEDULED, tenantId, payload); }
+
+  async publishCandidateMoved(candidateId: string, toStageId: string, pipelineId: string, tenantId: string) {
+    return this.bus.publish(EventType.CANDIDATE_MOVED, tenantId, {
+      candidateId,
+      tenantId,
+      fromStageId: null,
+      toStageId,
+      movedBy: 'SYSTEM',
+    });
+  }
+
+  async publishStageCustomized(stageId: string, pipelineId: string, tenantId: string) {
+    return this.bus.publish(EventType.STAGE_CUSTOMIZED, tenantId, {
+      stageId,
+      pipelineId,
+      tenantId,
+    });
+  }
 }
 
 @Injectable()
